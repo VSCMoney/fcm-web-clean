@@ -10,23 +10,56 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
     
-    - uses: subosito/flutter-action@v2
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Setup Flutter
+      uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
+        cache: true
     
-    - run: flutter pub get
-    - run: flutter build web --release --base-href "/fcm-web-clean/" --web-renderer canvaskit
-    - run: cp web/firebase-messaging-sw.js build/web/
-    - run: touch build/web/.nojekyll
+    - name: 📦 Get dependencies
+      run: flutter pub get
     
-    - uses: actions/upload-pages-artifact@v3
+    - name: 🏗️ Build web
+      run: flutter build web --release --base-href "/fcm-web-clean/"
+    
+    - name: 📋 Copy service worker
+      run: |
+        if [ -f "web/firebase-messaging-sw.js" ]; then
+          cp web/firebase-messaging-sw.js build/web/
+          echo "✅ Service worker copied"
+        fi
+    
+    - name: 🚫 Add .nojekyll
+      run: touch build/web/.nojekyll
+    
+    - name: ✅ Verify build
+      run: |
+        echo "Build contents:"
+        ls -lh build/web/ | head -10
+        echo ""
+        test -f build/web/index.html && echo "✅ index.html" || echo "❌ missing"
+        test -f build/web/firebase-messaging-sw.js && echo "✅ SW" || echo "❌ missing"
+    
+    - name: 📤 Upload artifact
+      uses: actions/upload-pages-artifact@v3
       with:
-        path: 'build/web'
+        path: './build/web'
     
-    - uses: actions/deploy-pages@v4
+    - name: 🌐 Deploy
+      id: deployment
+      uses: actions/deploy-pages@v4
+    
+    - name: ✅ Complete
+      run: echo "🌐 Live at ${{ steps.deployment.outputs.page_url }}"
