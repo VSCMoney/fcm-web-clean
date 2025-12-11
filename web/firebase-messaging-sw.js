@@ -25,7 +25,7 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
-const APP_URL = 'https://vscmoney.github.io/fcm-demo/';
+const APP_URL = 'https://vscmoney.github.io/fcm-web-clean/';
 
 console.log('[SW v4] Firebase initialized');
 
