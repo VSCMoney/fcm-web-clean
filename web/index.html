@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="FCM Web Demo">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>FCM Web Demo</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    body { margin: 0; background: #667eea; }
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body>
+<div id="loading">
+  <div style="text-align: center;">
+    <h1>🔔 FCM Web Demo</h1>
+    <p>Loading...</p>
+  </div>
+</div>
+
+<script>
+  window.addEventListener('flutter-first-frame', function() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+      loading.style.opacity = '0';
+      loading.style.transition = 'opacity 0.3s';
+      setTimeout(() => loading.remove(), 300);
+    }
+  });
+</script>
+
+<script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
